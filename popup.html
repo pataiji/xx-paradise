@@ -1,0 +1,46 @@
+<!doctype html>
+<html>
+<head>
+  <title>xxParadise</title>
+</head>
+<body>
+  <h1>xxParadise</h1>
+  <div>
+    <form id="configForm">
+      <fieldset>
+        <label for="status">Status</label>
+        <select name="status" id="status">
+          <option value="enabled">Enabled</option>
+          <option value="disabled">Disabled</option>
+        </select>
+      </fieldset>
+      <fieldset>
+        <label for="activeDomainRegExp">Active Domain Regexp</label>
+        <input type="text" name="activeDomainRegexp" id="activeDomainRegexp">
+      </fieldset>
+      <fieldset>
+        <label for="activeSrcRegExp">Active Src Regexp</label>
+        <input type="text" name="activeSrcRegexp" id="activeSrcRegexp">
+      </fieldset>
+      <fieldset>
+        <label for="customEndpointDomain">Custom Endoint Domain</label>
+        <input type="text" name="customEndpointDomain" id="customEndpointDomain">
+      </fieldset>
+      <fieldset>
+        <label for="mode">Mode</label>
+        <select name="mode" id="mode">
+          <option value="default">Default</option>
+          <option value="aggressive_privacy">Aggressive Privacy Safe</option>
+        </select>
+      </fieldset>
+      <hr>
+      <input type="submit" value="Save" style="background-color: lightblue;">
+      <input type="submit" value="Clear Cache" style="background-color: lightyellow;">
+    </form>
+    <p id="msgSave" style="display: none; color: red;">saved!</p>
+    <p id="msgClearCache" style="display: none; color: red;">Cache Cleared!</p>
+  </div>
+  <script src="./config.js"></script>
+  <script src="./popup.js"></script>
+</body>
+</html>
