@@ -71,3 +71,17 @@ Config.read().then(config => {
     new XxParadise(config).build();
   }
 });
+
+shortcut.add("Ctrl+Shift+s", () => {
+  Config.read().then(config => {
+    let mode = "";
+    if (config.mode === "aggressive_privacy") {
+      mode = "default";
+    } else {
+      mode = "aggressive_privacy";
+    }
+    Config.save("mode", mode).then(() => {
+      location.reload();
+    });
+  });
+});
