@@ -2,6 +2,8 @@
   "name": "xxParadise",
   "version": "0.1.2",
   "manifest_version": 2,
+  "description": "Paradise for your browser",
+  "author": "pataiji",
   "browser_action": {
     "default_popup": "popup.html"
   },
