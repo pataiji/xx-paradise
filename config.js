@@ -6,7 +6,7 @@ class Config {
       activeDomainRegexp: '.*',
       activeSrcRegexp: '.*',
       customEndpointDomain: null,
-      endpointDomain: '',
+      endpointDomain: 'xx-paradise.pataiji.com',
       mode: 'default',
       status: 'enabled'
     };
