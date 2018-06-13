@@ -6,48 +6,116 @@ class XxParadise {
   }
 
   build() {
-    document.addEventListener(
-      "DOMContentLoaded",
-      () => {
-        const imgs = document.getElementsByTagName("img");
-        this.replaceImageUrls(imgs);
-      },
-      false
-    );
-    document.addEventListener(
-      "DOMNodeInserted",
-      e => {
-        if (e.target instanceof HTMLElement) {
-          const imgs = e.target.querySelectorAll("img");
-          this.replaceImageUrls(imgs);
-        }
-      },
-      false
-    );
-  }
-
-  replaceImageUrls(imgs) {
-    Array.prototype.forEach.call(imgs, img => {
-      if (img.src.match(new RegExp(this.config.activeSrcRegexp))) {
-        const width = img.width;
-        const height = img.height;
-        if (width > 0 && height > 0) {
-          const fingerprint = this.getFingerprint(img.src);
-          const imageUrl = this.buildImageUrl(width, height, fingerprint);
-          img.src = "";
-          img.src = imageUrl;
+    new MutationObserver(mutationsList => {
+      for (const mutation of mutationsList) {
+        if (mutation.type == "childList" && mutation.addedNodes.length > 0) {
+          const imgs = mutation.target.getElementsByTagName("img");
+          this.replaceImageSrcAll(imgs);
+          const elements = e.target.getElementsByTagName("*");
+          this.replaceBackgroundImageAll(elements);
+        } else if (mutation.type == "attributes") {
+          if (mutation.attributeName == "style") {
+            this.replaceBackgroundImage(mutation.target);
+          } else if (mutation.attributeName == "src") {
+            this.replaceImageSrc(mutation.target);
+          } else if (mutation.attributeName == "srcset") {
+            this.replaceImageSrcset(mutation.target);
+          }
         }
       }
+    }).observe(document.querySelector("body"), {
+      attributes: true,
+      childList: true,
+      subtree: true,
+      attributeFilter: ["style", "src", "srcset"]
+    });
+
+    const imgs = document.getElementsByTagName("img");
+    this.replaceImageSrcAll(imgs);
+
+    const elements = document.getElementsByTagName("*");
+    this.replaceBackgroundImageAll(elements);
+  }
+
+  isReplacedImageUrl(imageUrl) {
+    return imageUrl.match(new RegExp("https?://" + this.config.endpointDomain));
+  }
+
+  replaceImageSrcAll(imgs) {
+    Array.prototype.forEach.call(imgs, img => {
+      this.replaceImageSrc(img);
     });
   }
 
-  buildImageUrl(width, height, fingerprint) {
+  replaceBackgroundImageAll(elms) {
+    Array.prototype.forEach.call(elms, elm => {
+      this.replaceBackgroundImage(elm);
+    });
+  }
+
+  replaceImageSrc(img) {
+    if (this.isReplacedImageUrl(img.src)) {
+      return;
+    }
+    const [width, height] = this.getElementSize(img);
+    if (width <= 0 || height <= 0) {
+      return;
+    }
+    const imageUrl = this.buildImageUrl(img.src, width, height);
+    if (imageUrl == img.src) return;
+    img.src = "";
+    img.src = imageUrl;
+  }
+
+  replaceImageSrcset(img) {
+    if (this.isReplacedImageUrl(img.srcset)) {
+      return;
+    }
+    const [width, height] = this.getElementSize(img);
+    if (width <= 0 || height <= 0) {
+      return;
+    }
+    const imageUrl = this.buildImageUrl(img.srcset, width, height);
+    if (imageUrl == img.srcset) return;
+    img.srcset = "";
+    img.srcset = imageUrl;
+  }
+
+  replaceBackgroundImage(elm) {
+    const backgroundImage = window.getComputedStyle(elm).backgroundImage;
+    const match = backgroundImage.match(new RegExp('url\\("?(.*)"?\\)'));
+    if (!match) {
+      return;
+    }
+    if (this.isReplacedImageUrl(match[1])) {
+      return;
+    }
+    const [width, height] = this.getElementSize(elm);
+    if (width <= 0 || height <= 0) {
+      return;
+    }
+    const imageUrl = this.buildImageUrl(match[1], width, height);
+    elm.style.backgroundImage = "url(" + imageUrl + ")";
+  }
+
+  buildImageUrl(imageUrl, width, height) {
+    if (!imageUrl.match(new RegExp(this.config.activeSrcRegexp))) {
+      return imageUrl;
+    }
+    const fingerprint = this.getFingerprint(imageUrl);
     let parameter = width + "x" + height;
     if (this.config.mode === "aggressive_privacy")
       parameter += "-mode_aggressive_privacy";
     return (
       "//" + this.config.endpointDomain + "/" + parameter + "/" + fingerprint
     );
+  }
+
+  getElementSize(elm) {
+    const style = window.getComputedStyle(elm);
+    const width = Math.ceil(style.width.replace("px", ""));
+    const height = Math.ceil(style.height.replace("px", ""));
+    return [width, height];
   }
 
   getFingerprint(str) {
