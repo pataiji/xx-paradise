@@ -23,8 +23,7 @@ class Config {
             config.activeSrcRegexp = saved.config.activeSrcRegexp;
           if (saved.config.customEndpointDomain)
             config.endpointDomain = saved.config.customEndpointDomain;
-          if (saved.config.customEndpointDomain)
-            config.endpointDomain = saved.config.customEndpointDomain;
+            config.customEndpointDomain = saved.config.customEndpointDomain;
           if (saved.config.salt)
             config.salt = saved.config.salt;
           else {
