@@ -22,5 +22,8 @@
   "permissions": [
     "activeTab",
     "storage"
-  ]
+  ],
+  "icons": {
+    "128": "xx-paradise128.png"
+  }
 }
